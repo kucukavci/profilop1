@@ -1,0 +1,670 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1">
+<title>Profil Kesim Optimizasyonu</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=JetBrains+Mono:wght@400;500;700&family=Inter:wght@400;500;600&display=swap');
+
+  :root{
+    --bg:#eef1f3;
+    --surface:#ffffff;
+    --ink:#182029;
+    --ink-soft:#5b6672;
+    --steel:#2c5f7c;
+    --steel-dark:#1d3f52;
+    --steel-light:#e4edf1;
+    --accent:#ff6a35;
+    --accent-soft:#ffe3d6;
+    --good:#2f9e63;
+    --good-soft:#e0f5e9;
+    --line:#dde2e6;
+    --line-strong:#c3cad0;
+    --mono:'JetBrains Mono', ui-monospace, monospace;
+    --disp:'Space Grotesk', 'Inter', sans-serif;
+    --sans:'Inter', system-ui, sans-serif;
+  }
+
+  *{box-sizing:border-box;}
+  html,body{margin:0;padding:0;}
+  body{
+    background:var(--bg);
+    color:var(--ink);
+    font-family:var(--sans);
+    line-height:1.4;
+    padding-bottom:60px;
+  }
+
+  /* ---------- Header ---------- */
+  header.top{
+    background:linear-gradient(135deg,var(--steel-dark),var(--steel));
+    color:#fff;
+    padding:28px 20px 34px;
+    position:relative;
+    overflow:hidden;
+  }
+  header.top::after{
+    content:"";
+    position:absolute;
+    right:-40px; top:-40px;
+    width:220px; height:220px;
+    background:repeating-linear-gradient(45deg,rgba(255,255,255,.06) 0 10px,transparent 10px 20px);
+    border-radius:50%;
+    pointer-events:none;
+  }
+  .eyebrow{
+    font-family:var(--mono);
+    font-size:11px;
+    letter-spacing:.14em;
+    text-transform:uppercase;
+    color:#ffd8c4;
+    display:flex; align-items:center; gap:8px;
+  }
+  .eyebrow::before{content:"";width:18px;height:2px;background:var(--accent);display:inline-block;}
+  h1{
+    font-family:var(--disp);
+    font-size:26px;
+    margin:8px 0 4px;
+    letter-spacing:-.01em;
+  }
+  header.top p{margin:0;color:#cfe0e8;font-size:13.5px;max-width:520px;}
+
+  .wrap{max-width:960px;margin:0 auto;padding:0 16px;}
+
+  /* ---------- Cards / sections ---------- */
+  .panel{
+    background:var(--surface);
+    border:1px solid var(--line);
+    border-radius:14px;
+    margin-top:18px;
+    overflow:hidden;
+  }
+  .panel-head{
+    display:flex; align-items:center; justify-content:space-between;
+    padding:14px 18px;
+    border-bottom:1px solid var(--line);
+    background:linear-gradient(180deg,#fbfcfd,#f5f7f8);
+  }
+  .panel-head h2{
+    font-family:var(--disp);
+    font-size:15px;
+    margin:0;
+    display:flex; align-items:center; gap:8px;
+  }
+  .panel-head h2 .num{
+    font-family:var(--mono);
+    font-size:11px;
+    color:#fff;
+    background:var(--steel);
+    width:20px; height:20px;
+    border-radius:5px;
+    display:inline-flex; align-items:center; justify-content:center;
+  }
+  .panel-body{padding:18px;}
+
+  /* ---------- Form fields ---------- */
+  .field-grid{
+    display:grid;
+    grid-template-columns:repeat(3,1fr);
+    gap:14px;
+  }
+  .field label{
+    display:block;
+    font-size:11.5px;
+    font-weight:600;
+    color:var(--ink-soft);
+    text-transform:uppercase;
+    letter-spacing:.04em;
+    margin-bottom:6px;
+  }
+  .field .unit-input{position:relative;}
+  .field input[type=number], .field input[type=text]{
+    width:100%;
+    padding:10px 40px 10px 12px;
+    border:1.5px solid var(--line-strong);
+    border-radius:9px;
+    font-family:var(--mono);
+    font-size:15px;
+    color:var(--ink);
+    background:#fbfcfd;
+    transition:border-color .15s, box-shadow .15s;
+  }
+  .field input:focus{
+    outline:none;
+    border-color:var(--steel);
+    box-shadow:0 0 0 3px var(--steel-light);
+  }
+  .field .unit{
+    position:absolute; right:12px; top:50%; transform:translateY(-50%);
+    font-family:var(--mono); font-size:12px; color:var(--ink-soft);
+    pointer-events:none;
+  }
+  .field small{display:block;margin-top:5px;font-size:11px;color:var(--ink-soft);}
+
+  /* ---------- Pieces table ---------- */
+  table.pieces{width:100%;border-collapse:collapse;}
+  table.pieces thead th{
+    text-align:left;
+    font-size:10.5px;
+    text-transform:uppercase;
+    letter-spacing:.05em;
+    color:var(--ink-soft);
+    padding:0 8px 8px;
+    font-weight:600;
+  }
+  table.pieces td{padding:6px 8px;vertical-align:middle;}
+  table.pieces tr.piece-row{border-top:1px solid var(--line);}
+  table.pieces input[type=text],table.pieces input[type=number]{
+    width:100%;
+    padding:8px 10px;
+    border:1.5px solid var(--line-strong);
+    border-radius:8px;
+    font-family:var(--mono);
+    font-size:14px;
+    background:#fbfcfd;
+  }
+  table.pieces input:focus{outline:none;border-color:var(--steel);box-shadow:0 0 0 3px var(--steel-light);}
+  .swatch{
+    width:16px;height:16px;border-radius:5px;flex:none;
+    box-shadow:inset 0 0 0 1.5px rgba(0,0,0,.12);
+  }
+  .name-cell{display:flex;align-items:center;gap:8px;}
+  .col-name{width:34%;}
+  .col-len{width:20%;}
+  .col-qty{width:16%;}
+  .col-del{width:36px;}
+  .del-btn{
+    width:30px;height:30px;border-radius:8px;border:1.5px solid var(--line-strong);
+    background:#fff;color:var(--ink-soft);cursor:pointer;font-size:15px;line-height:1;
+    display:flex;align-items:center;justify-content:center;
+    transition:.15s;
+  }
+  .del-btn:hover{background:#fdeceb;border-color:#f3b3ac;color:#c0392b;}
+
+  .add-row-btn{
+    margin-top:10px;
+    display:inline-flex;align-items:center;gap:7px;
+    background:var(--steel-light);
+    color:var(--steel-dark);
+    border:1.5px dashed var(--steel);
+    padding:9px 14px;
+    border-radius:9px;
+    font-size:13px;
+    font-weight:600;
+    cursor:pointer;
+  }
+  .add-row-btn:hover{background:#d7e6ec;}
+
+  /* ---------- Calculate button ---------- */
+  .calc-bar{
+    position:sticky; bottom:14px;
+    display:flex; justify-content:center;
+    margin-top:22px;
+    z-index:20;
+  }
+  #calcBtn{
+    font-family:var(--disp);
+    font-weight:700;
+    font-size:15.5px;
+    color:#fff;
+    background:linear-gradient(135deg,var(--accent),#e0491b);
+    border:none;
+    padding:15px 34px;
+    border-radius:100px;
+    cursor:pointer;
+    box-shadow:0 8px 22px rgba(255,106,53,.4);
+    letter-spacing:.01em;
+    display:flex; align-items:center; gap:10px;
+    transition:transform .12s;
+  }
+  #calcBtn:active{transform:scale(.97);}
+  .error-box{
+    margin-top:14px;
+    background:#fdeceb;
+    border:1.5px solid #f3b3ac;
+    color:#9b2c22;
+    padding:12px 14px;
+    border-radius:10px;
+    font-size:13.5px;
+  }
+
+  /* ---------- Summary cards ---------- */
+  .summary-grid{
+    display:grid;
+    grid-template-columns:repeat(4,1fr);
+    gap:12px;
+  }
+  .stat{
+    background:#fbfcfd;
+    border:1px solid var(--line);
+    border-radius:12px;
+    padding:14px 14px 12px;
+  }
+  .stat .label{font-size:10.5px;text-transform:uppercase;letter-spacing:.05em;color:var(--ink-soft);font-weight:600;}
+  .stat .val{font-family:var(--mono);font-weight:700;font-size:22px;margin-top:4px;color:var(--steel-dark);}
+  .stat .val small{font-size:12px;font-weight:500;color:var(--ink-soft);}
+  .stat.fire .val{color:var(--accent);}
+
+  /* ---------- Legend ---------- */
+  .legend{display:flex;flex-wrap:wrap;gap:8px 16px;margin-top:14px;padding-top:14px;border-top:1px solid var(--line);}
+  .legend-item{display:flex;align-items:center;gap:7px;font-size:12.5px;color:var(--ink-soft);}
+  .legend-item .swatch{width:13px;height:13px;}
+  .legend-item b{color:var(--ink);font-family:var(--mono);}
+
+  /* ---------- Bars ---------- */
+  .bar-card{margin-top:16px;}
+  .bar-card:first-child{margin-top:4px;}
+  .bar-title-row{
+    display:flex; align-items:baseline; justify-content:space-between;
+    margin-bottom:8px;
+  }
+  .bar-title{font-family:var(--disp);font-weight:600;font-size:14px;}
+  .bar-meta{font-family:var(--mono);font-size:11.5px;color:var(--ink-soft);}
+  .bar-meta .fire-pct{color:var(--accent);font-weight:700;}
+  .bar-track{
+    display:flex;
+    width:100%;
+    height:52px;
+    border-radius:9px;
+    overflow:hidden;
+    border:1.5px solid var(--line-strong);
+    background:#fff;
+  }
+  .seg{
+    position:relative;
+    height:100%;
+    display:flex; align-items:center; justify-content:center;
+    font-family:var(--mono);
+    font-size:11px;
+    font-weight:600;
+    overflow:hidden;
+    border-right:1px solid rgba(0,0,0,.08);
+  }
+  .seg:last-child{border-right:none;}
+  .seg-trim{
+    background:repeating-linear-gradient(45deg,#e4e7ea 0 6px,#f1f3f4 6px 12px);
+    min-width:6px;
+  }
+  .seg-kerf{
+    background:#20262c;
+    min-width:2px;
+  }
+  .seg-waste{
+    background:repeating-linear-gradient(45deg,var(--accent-soft) 0 6px,#fff0e8 6px 12px);
+    color:#c0491f;
+    min-width:6px;
+  }
+  .seg-piece span{
+    padding:0 4px;
+    white-space:nowrap;
+    text-shadow:0 1px 2px rgba(0,0,0,.15);
+  }
+  .bar-composition{
+    font-size:11.5px;
+    color:var(--ink-soft);
+    margin-top:6px;
+    font-family:var(--mono);
+  }
+
+  .empty-state{
+    text-align:center;
+    padding:40px 20px;
+    color:var(--ink-soft);
+    font-size:13.5px;
+  }
+
+  footer.credit{
+    text-align:center;
+    font-size:11px;
+    color:var(--ink-soft);
+    margin-top:30px;
+  }
+
+  @media (max-width:640px){
+    .field-grid{grid-template-columns:1fr;}
+    .summary-grid{grid-template-columns:repeat(2,1fr);}
+    table.pieces thead{display:none;}
+    table.pieces tr.piece-row{
+      display:grid;
+      grid-template-columns:1fr 1fr;
+      grid-template-areas:"name name" "len qty" "del del";
+      gap:6px 8px;
+      padding:10px 0;
+    }
+    table.pieces td{padding:0;}
+    table.pieces td.col-name{grid-area:name;}
+    table.pieces td.col-len{grid-area:len;}
+    table.pieces td.col-qty{grid-area:qty;}
+    table.pieces td.col-del{grid-area:del;display:flex;justify-content:flex-end;}
+    .del-btn{width:100%;border-radius:8px;}
+    h1{font-size:22px;}
+    .panel-body{padding:14px;}
+  }
+</style>
+</head>
+<body>
+
+<header class="top">
+  <div class="wrap">
+    <div class="eyebrow">Kesim Planı Hesaplayıcı</div>
+    <h1>Profil Kesim Optimizasyonu</h1>
+    <p>Stok profil boyunu, uç temizleme ve testere paylarını gir, kesilecek parçaları listele — en az fire ile hangi profile hangi parçaların yerleştirileceğini otomatik hesapla.</p>
+  </div>
+</header>
+
+<div class="wrap">
+
+  <!-- 1. Profil Ayarları -->
+  <div class="panel">
+    <div class="panel-head"><h2><span class="num">1</span>Profil Ayarları</h2></div>
+    <div class="panel-body">
+      <div class="field-grid">
+        <div class="field">
+          <label for="stockLength">Profil Boyu</label>
+          <div class="unit-input">
+            <input type="number" id="stockLength" value="6000" min="1" step="1">
+            <span class="unit">mm</span>
+          </div>
+          <small>Elinizdeki stok profilin tam boyu</small>
+        </div>
+        <div class="field">
+          <label for="trimAllowance">Uç Temizleme Payı (her uç)</label>
+          <div class="unit-input">
+            <input type="number" id="trimAllowance" value="5" min="0" step="0.5">
+            <span class="unit">mm</span>
+          </div>
+          <small>Profilin her iki ucundan atılacak pay</small>
+        </div>
+        <div class="field">
+          <label for="kerf">Testere Payı</label>
+          <div class="unit-input">
+            <input type="number" id="kerf" value="3" min="0" step="0.5">
+            <span class="unit">mm</span>
+          </div>
+          <small>Her kesimde kaybolan bıçak kalınlığı</small>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 2. Parça Listesi -->
+  <div class="panel">
+    <div class="panel-head"><h2><span class="num">2</span>Parça Listesi</h2></div>
+    <div class="panel-body">
+      <table class="pieces">
+        <thead>
+          <tr>
+            <th class="col-name">Parça Adı</th>
+            <th class="col-len">Boy (mm)</th>
+            <th class="col-qty">Adet</th>
+            <th class="col-del"></th>
+          </tr>
+        </thead>
+        <tbody id="pieceTableBody"></tbody>
+      </table>
+      <button class="add-row-btn" id="addRowBtn" type="button">+ Parça Ekle</button>
+    </div>
+  </div>
+
+  <div class="calc-bar">
+    <button id="calcBtn" type="button">⚙ Hesapla</button>
+  </div>
+
+  <div id="errorBox"></div>
+
+  <!-- 3. Sonuçlar -->
+  <div class="panel" id="resultsPanel" style="display:none;">
+    <div class="panel-head"><h2><span class="num">3</span>Sonuç Özeti</h2></div>
+    <div class="panel-body">
+      <div class="summary-grid" id="summaryGrid"></div>
+      <div class="legend" id="legendBox"></div>
+    </div>
+  </div>
+
+  <!-- 4. Görsel Kesim Planı -->
+  <div class="panel" id="visualPanel" style="display:none;">
+    <div class="panel-head"><h2><span class="num">4</span>Görsel Kesim Planı</h2></div>
+    <div class="panel-body" id="barsContainer"></div>
+  </div>
+
+  <footer class="credit">Tüm hesaplamalar tarayıcınızda yapılır · veriniz cihazınızdan çıkmaz</footer>
+</div>
+
+<script>
+(function(){
+  "use strict";
+
+  const PALETTE = [
+    "#2c5f7c","#ff6a35","#2f9e63","#8a5cf6","#e0b400",
+    "#d64f7a","#1d9bb5","#c2622a","#5b7cfa","#4a9d3d",
+    "#b3457a","#3a8f8f","#e07a1f","#6b5ce0","#2e8b6e"
+  ];
+
+  const tbody = document.getElementById('pieceTableBody');
+  let rowCount = 0;
+
+  function addRow(name, len, qty){
+    rowCount++;
+    const tr = document.createElement('tr');
+    tr.className = 'piece-row';
+    tr.dataset.id = rowCount;
+    tr.innerHTML = `
+      <td class="col-name">
+        <div class="name-cell">
+          <span class="swatch" style="background:${PALETTE[(rowCount-1)%PALETTE.length]}"></span>
+          <input type="text" class="p-name" placeholder="Parça ${rowCount}" value="${name||''}">
+        </div>
+      </td>
+      <td class="col-len"><input type="number" class="p-len" min="1" step="1" value="${len||''}" placeholder="mm"></td>
+      <td class="col-qty"><input type="number" class="p-qty" min="1" step="1" value="${qty||''}" placeholder="adet"></td>
+      <td class="col-del"><button class="del-btn" type="button" title="Sil">✕</button></td>
+    `;
+    tr.querySelector('.del-btn').addEventListener('click', ()=>{
+      tr.remove();
+    });
+    tbody.appendChild(tr);
+  }
+
+  document.getElementById('addRowBtn').addEventListener('click', ()=> addRow());
+
+  // Örnek başlangıç satırları
+  addRow('Kasa Üst', 1200, 4);
+  addRow('Kasa Yan', 900, 6);
+
+  function fmt(n){
+    return Number(n.toFixed(2)).toLocaleString('tr-TR');
+  }
+
+  function readInputs(){
+    const stockLength = parseFloat(document.getElementById('stockLength').value);
+    const trim = parseFloat(document.getElementById('trimAllowance').value);
+    const kerf = parseFloat(document.getElementById('kerf').value);
+    const rows = Array.from(tbody.querySelectorAll('.piece-row'));
+    const pieces = [];
+    rows.forEach((tr,idx)=>{
+      const name = tr.querySelector('.p-name').value.trim() || ('Parça ' + (idx+1));
+      const len = parseFloat(tr.querySelector('.p-len').value);
+      const qty = parseInt(tr.querySelector('.p-qty').value, 10);
+      const color = PALETTE[idx % PALETTE.length];
+      if(!isNaN(len) && !isNaN(qty) && len>0 && qty>0){
+        pieces.push({name, len, qty, color, key:name+'|'+len});
+      }
+    });
+    return {stockLength, trim, kerf, pieces};
+  }
+
+  function showError(msg){
+    document.getElementById('errorBox').innerHTML = msg ? `<div class="error-box">⚠ ${msg}</div>` : '';
+  }
+
+  function optimize(stockLength, trim, kerf, pieces){
+    const usable = stockLength - 2*trim;
+    // genişlet: her adet için tekil item
+    let items = [];
+    pieces.forEach(p=>{
+      for(let i=0;i<p.qty;i++){
+        items.push({name:p.name, length:p.len, color:p.color, key:p.key});
+      }
+    });
+    // en uzundan en kısaya sırala (Best-Fit Decreasing)
+    items.sort((a,b)=> b.length - a.length);
+
+    const tooLong = items.filter(it => it.length > usable);
+    if(tooLong.length){
+      const uniq = [...new Set(tooLong.map(t=>`${t.name} (${t.length}mm)`))];
+      return {error: `Şu parça(lar) kullanılabilir profil uzunluğundan (${fmt(usable)} mm) uzun, hiçbir profile sığmaz: ${uniq.join(', ')}`};
+    }
+
+    const bars = []; // {items:[], used:0}
+    items.forEach(item=>{
+      let bestBar = null, bestRemaining = Infinity;
+      for(const bar of bars){
+        const addLen = item.length + (bar.items.length>0 ? kerf : 0);
+        const remainingAfter = usable - bar.used - addLen;
+        if(remainingAfter >= -1e-9 && remainingAfter < bestRemaining){
+          bestRemaining = remainingAfter;
+          bestBar = bar;
+        }
+      }
+      if(bestBar){
+        const addLen = item.length + (bestBar.items.length>0 ? kerf : 0);
+        bestBar.items.push(item);
+        bestBar.used += addLen;
+      } else {
+        bars.push({items:[item], used:item.length});
+      }
+    });
+
+    return {bars, usable};
+  }
+
+  function render(result, ctx){
+    const {stockLength, trim, kerf, pieces} = ctx;
+    const {bars, usable} = result;
+
+    const totalPieceCount = pieces.reduce((s,p)=>s+p.qty,0);
+    const totalPieceLength = pieces.reduce((s,p)=>s+p.len*p.qty,0);
+    const totalProfileLength = bars.length * stockLength;
+    const totalFire = totalProfileLength - totalPieceLength;
+    const firePct = totalProfileLength>0 ? (totalFire/totalProfileLength*100) : 0;
+
+    // Özet kartları
+    const summaryGrid = document.getElementById('summaryGrid');
+    summaryGrid.innerHTML = `
+      <div class="stat"><div class="label">Toplam Parça</div><div class="val">${totalPieceCount} <small>adet</small></div></div>
+      <div class="stat"><div class="label">Toplam Kesim Uzunluğu</div><div class="val">${fmt(totalPieceLength)} <small>mm</small></div></div>
+      <div class="stat"><div class="label">Gereken Profil</div><div class="val">${bars.length} <small>adet</small></div></div>
+      <div class="stat fire"><div class="label">Toplam Fire</div><div class="val">${fmt(totalFire)} <small>mm (%${fmt(firePct)})</small></div></div>
+    `;
+
+    // Legend
+    const legendBox = document.getElementById('legendBox');
+    const seen = new Map();
+    pieces.forEach(p=>{ if(!seen.has(p.key)) seen.set(p.key, p); });
+    legendBox.innerHTML = Array.from(seen.values()).map(p=>
+      `<div class="legend-item"><span class="swatch" style="background:${p.color}"></span>${p.name} — <b>${fmt(p.len)} mm</b> × ${p.qty}</div>`
+    ).join('');
+
+    // Görsel çubuklar
+    const barsContainer = document.getElementById('barsContainer');
+    barsContainer.innerHTML = '';
+    bars.forEach((bar, i)=>{
+      const remainder = usable - bar.used;
+      const barFirePct = ((remainder + 2*trim) / stockLength * 100);
+
+      const card = document.createElement('div');
+      card.className = 'bar-card';
+
+      const titleRow = document.createElement('div');
+      titleRow.className = 'bar-title-row';
+      titleRow.innerHTML = `
+        <div class="bar-title">Profil ${i+1}</div>
+        <div class="bar-meta">Kullanım: ${fmt(bar.used)} / ${fmt(usable)} mm &nbsp;·&nbsp; Fire: <span class="fire-pct">${fmt(remainder + 2*trim)} mm (%${fmt(barFirePct)})</span></div>
+      `;
+      card.appendChild(titleRow);
+
+      const track = document.createElement('div');
+      track.className = 'bar-track';
+
+      function seg(cls, pct, label, bg, title){
+        const d = document.createElement('div');
+        d.className = 'seg ' + cls;
+        d.style.width = Math.max(pct,0) + '%';
+        if(bg) d.style.background = bg;
+        if(title) d.title = title;
+        if(label) d.innerHTML = `<span>${label}</span>`;
+        return d;
+      }
+
+      const trimPct = trim/stockLength*100;
+      track.appendChild(seg('seg-trim', trimPct, '', null, `Uç temizleme payı: ${fmt(trim)} mm`));
+
+      bar.items.forEach((it, idx)=>{
+        if(idx>0){
+          const kerfPct = kerf/stockLength*100;
+          track.appendChild(seg('seg-kerf', kerfPct, '', null, `Testere payı: ${fmt(kerf)} mm`));
+        }
+        const pct = it.length/stockLength*100;
+        const showLabel = pct >= 6;
+        const s = seg('seg-piece', pct, showLabel ? fmt(it.length) : '', it.color, `${it.name}: ${fmt(it.length)} mm`);
+        s.style.color = '#fff';
+        track.appendChild(s);
+      });
+
+      if(remainder > 0.01){
+        const wastePct = remainder/stockLength*100;
+        track.appendChild(seg('seg-waste', wastePct, wastePct>=6?fmt(remainder):'', null, `Kalan fire: ${fmt(remainder)} mm`));
+      }
+
+      track.appendChild(seg('seg-trim', trimPct, '', null, `Uç temizleme payı: ${fmt(trim)} mm`));
+
+      card.appendChild(track);
+
+      const comp = document.createElement('div');
+      comp.className = 'bar-composition';
+      comp.textContent = 'Parçalar: ' + bar.items.map(it=>fmt(it.length)+' mm').join(' + ') +
+        (remainder>0.01 ? `  |  Kalan fire: ${fmt(remainder)} mm` : '');
+      card.appendChild(comp);
+
+      barsContainer.appendChild(card);
+    });
+
+    document.getElementById('resultsPanel').style.display = '';
+    document.getElementById('visualPanel').style.display = '';
+  }
+
+  document.getElementById('calcBtn').addEventListener('click', ()=>{
+    showError('');
+    const ctx = readInputs();
+
+    if(isNaN(ctx.stockLength) || ctx.stockLength<=0){
+      showError('Lütfen geçerli bir profil boyu girin.'); return;
+    }
+    if(isNaN(ctx.trim) || ctx.trim<0){
+      showError('Lütfen geçerli bir uç temizleme payı girin.'); return;
+    }
+    if(isNaN(ctx.kerf) || ctx.kerf<0){
+      showError('Lütfen geçerli bir testere payı girin.'); return;
+    }
+    if(ctx.stockLength - 2*ctx.trim <= 0){
+      showError('Uç temizleme payları profil boyundan büyük veya eşit olamaz.'); return;
+    }
+    if(ctx.pieces.length===0){
+      showError('Lütfen en az bir geçerli parça satırı girin (boy ve adet).'); return;
+    }
+
+    const result = optimize(ctx.stockLength, ctx.trim, ctx.kerf, ctx.pieces);
+    if(result.error){
+      showError(result.error);
+      document.getElementById('resultsPanel').style.display = 'none';
+      document.getElementById('visualPanel').style.display = 'none';
+      return;
+    }
+    render(result, ctx);
+  });
+
+})();
+</script>
+</body>
+</html>
