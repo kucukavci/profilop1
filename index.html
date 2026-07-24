@@ -142,21 +142,32 @@
   }
   .field small{display:block;margin-top:5px;font-size:11px;color:var(--ink-soft);}
 
-  /* ---------- Pieces table ---------- */
-  table.pieces{width:100%;border-collapse:collapse;}
-  table.pieces thead th{
-    text-align:left;
+  /* ---------- Pieces list (div-based, avoids mobile table/grid bugs) ---------- */
+  .pieces-table{width:100%;}
+  .pieces-head{
+    display:grid;
+    grid-template-columns:34% 20% 16% 36px;
+    gap:8px;
+    padding:0 8px 8px;
+  }
+  .pieces-head > div{
     font-size:10.5px;
     text-transform:uppercase;
     letter-spacing:.05em;
     color:var(--ink-soft);
-    padding:0 8px 8px;
     font-weight:600;
   }
-  table.pieces td{padding:6px 8px;vertical-align:middle;}
-  table.pieces tr.piece-row{border-top:1px solid var(--line);}
-  table.pieces input[type=text],table.pieces input[type=number]{
+  .piece-row{
+    display:grid;
+    grid-template-columns:34% 20% 16% 36px;
+    gap:8px;
+    align-items:center;
+    padding:7px 8px;
+    border-top:1px solid var(--line);
+  }
+  .piece-row input[type=text],.piece-row input[type=number]{
     width:100%;
+    min-width:0;
     padding:8px 10px;
     border:1.5px solid var(--line-strong);
     border-radius:8px;
@@ -164,16 +175,13 @@
     font-size:14px;
     background:#fbfcfd;
   }
-  table.pieces input:focus{outline:none;border-color:var(--steel);box-shadow:0 0 0 3px var(--steel-light);}
+  .piece-row input:focus{outline:none;border-color:var(--steel);box-shadow:0 0 0 3px var(--steel-light);}
   .swatch{
     width:16px;height:16px;border-radius:5px;flex:none;
     box-shadow:inset 0 0 0 1.5px rgba(0,0,0,.12);
   }
-  .name-cell{display:flex;align-items:center;gap:8px;}
-  .col-name{width:34%;}
-  .col-len{width:20%;}
-  .col-qty{width:16%;}
-  .col-del{width:36px;}
+  .name-cell{display:flex;align-items:center;gap:8px;min-width:0;}
+  .col-del{display:flex;justify-content:center;}
   .del-btn{
     width:30px;height:30px;border-radius:8px;border:1.5px solid var(--line-strong);
     background:#fff;color:var(--ink-soft);cursor:pointer;font-size:15px;line-height:1;
@@ -324,19 +332,17 @@
   @media (max-width:640px){
     .field-grid{grid-template-columns:1fr;}
     .summary-grid{grid-template-columns:repeat(2,1fr);}
-    table.pieces thead{display:none;}
-    table.pieces tr.piece-row{
-      display:grid;
+    .pieces-head{display:none;}
+    .piece-row{
       grid-template-columns:1fr 1fr;
       grid-template-areas:"name name" "len qty" "del del";
       gap:6px 8px;
       padding:10px 0;
     }
-    table.pieces td{padding:0;}
-    table.pieces td.col-name{grid-area:name;}
-    table.pieces td.col-len{grid-area:len;}
-    table.pieces td.col-qty{grid-area:qty;}
-    table.pieces td.col-del{grid-area:del;display:flex;justify-content:flex-end;}
+    .piece-row > .col-name{grid-area:name;}
+    .piece-row > .col-len{grid-area:len;}
+    .piece-row > .col-qty{grid-area:qty;}
+    .piece-row > .col-del{grid-area:del;display:flex;justify-content:flex-end;}
     .del-btn{width:100%;border-radius:8px;}
     h1{font-size:22px;}
     .panel-body{padding:14px;}
@@ -392,17 +398,15 @@
   <div class="panel">
     <div class="panel-head"><h2><span class="num">2</span>Parça Listesi</h2></div>
     <div class="panel-body">
-      <table class="pieces">
-        <thead>
-          <tr>
-            <th class="col-name">Parça Adı</th>
-            <th class="col-len">Boy (mm)</th>
-            <th class="col-qty">Adet</th>
-            <th class="col-del"></th>
-          </tr>
-        </thead>
-        <tbody id="pieceTableBody"></tbody>
-      </table>
+      <div class="pieces-table">
+        <div class="pieces-head">
+          <div class="col-name">Parça Adı</div>
+          <div class="col-len">Boy (mm)</div>
+          <div class="col-qty">Adet</div>
+          <div class="col-del"></div>
+        </div>
+        <div id="pieceTableBody"></div>
+      </div>
       <button class="add-row-btn" id="addRowBtn" type="button">+ Parça Ekle</button>
     </div>
   </div>
@@ -446,24 +450,24 @@
 
   function addRow(name, len, qty){
     rowCount++;
-    const tr = document.createElement('tr');
-    tr.className = 'piece-row';
-    tr.dataset.id = rowCount;
-    tr.innerHTML = `
-      <td class="col-name">
+    const row = document.createElement('div');
+    row.className = 'piece-row';
+    row.dataset.id = rowCount;
+    row.innerHTML = `
+      <div class="col-name">
         <div class="name-cell">
           <span class="swatch" style="background:${PALETTE[(rowCount-1)%PALETTE.length]}"></span>
           <input type="text" class="p-name" placeholder="Parça ${rowCount}" value="${name||''}">
         </div>
-      </td>
-      <td class="col-len"><input type="number" class="p-len" min="1" step="1" value="${len||''}" placeholder="mm"></td>
-      <td class="col-qty"><input type="number" class="p-qty" min="1" step="1" value="${qty||''}" placeholder="adet"></td>
-      <td class="col-del"><button class="del-btn" type="button" title="Sil">✕</button></td>
+      </div>
+      <div class="col-len"><input type="number" class="p-len" min="1" step="1" value="${len||''}" placeholder="mm"></div>
+      <div class="col-qty"><input type="number" class="p-qty" min="1" step="1" value="${qty||''}" placeholder="adet"></div>
+      <div class="col-del"><button class="del-btn" type="button" title="Sil">✕</button></div>
     `;
-    tr.querySelector('.del-btn').addEventListener('click', ()=>{
-      tr.remove();
+    row.querySelector('.del-btn').addEventListener('click', ()=>{
+      row.remove();
     });
-    tbody.appendChild(tr);
+    tbody.appendChild(row);
   }
 
   document.getElementById('addRowBtn').addEventListener('click', ()=> addRow());
